@@ -1,0 +1,10 @@
+test-logs/
+nim-cache/
+.direnv/
+tests/test_*
+!tests/test_*.nim
+!tests/test_*.cfg
+*.dSYM
+*.exe
+*.pdb
+nimcache/
