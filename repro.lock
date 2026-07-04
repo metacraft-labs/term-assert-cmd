@@ -1,0 +1,9 @@
+schema = "reprobuild.solved-graph-lock.v2"
+
+[lock]
+platform = "amd64-linux"
+optimal = false
+inputs_digest = "fnv1a64:1a0dccde7fb41369"
+variants = []
+packages = [{ name = "gcc", version = "12.0.0", source = "gcc" }, { name = "nim", version = "2.0.0", source = "nim" }, { name = "term_assert_client", version = "1.0.0", source = "term_assert_client" }, { name = "term_assert_cmd", version = "0.1.0", source = "term_assert_cmd" }]
+deps = [{ name = "term-assert-cmd", path = ".", coord_kind = "vcs", url = "", ref = "mcr-stege0-and-fixes", revision = "3da5bfaf5cd9aaa8f62011be2c9c7afef0b9bb53", integrity = "git-sha1:3da5bfaf5cd9aaa8f62011be2c9c7afef0b9bb53", version = "", visibility = "public", participation = "", depends = "term_assert_client", groups = "" }, { name = "term_assert_client", path = "../TermAssertClient", coord_kind = "vcs", url = "", ref = "mcr-stege0-and-fixes", revision = "ac1d1307000bd2c9922e56dce50512de460ae399", integrity = "git-sha1:ac1d1307000bd2c9922e56dce50512de460ae399", version = "", visibility = "public", participation = "", depends = "", groups = "" }]
