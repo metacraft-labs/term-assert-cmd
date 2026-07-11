@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
+    runs-on: incus
     steps:
       - uses: actions/checkout@v4
       - name: Setup Nix
@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-latest]
+        os: [incus, macos-tart]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Nix
