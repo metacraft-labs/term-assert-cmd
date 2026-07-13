@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: incus
+    runs-on: eph-linux-x64
     steps:
       - uses: actions/checkout@v4
       - name: Setup Nix
@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [incus, macos-tart]
+        os: [eph-linux-x64, eph-macos-arm64]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Nix
