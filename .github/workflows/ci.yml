@@ -1,8 +1,22 @@
 name: CI
 
+# Every job here compiles against sibling repositories that are NOT part of
+# this checkout: the Justfile's `src-paths` carries `--path:../<sibling>/src`
+# for each entry in `.github/sibling-repos`. A bare `actions/checkout@v4` puts
+# none of them on disk, so `nim check` / `nim c` resolved no cross-repo import
+# and every recipe failed -- silently, because the recipes pipe into `tee` and
+# `just`'s default shell has no pipefail (fixed separately in the Justfile).
+#
+# Siblings are cloned by `setup-dev-env`, which delegates to `clone-siblings`
+# and resolves each name in `.github/sibling-repos` against the per-commit
+# workspace lock in the manifest repo. That is the single approved sibling
+# revision source (codetracer-specs/Testing/Cross-Repo-CI-Integration.md); a
+# second hand-pinned `actions/checkout` would be another place for revisions to
+# drift away from what the workspace actually builds.
+
 on:
   push:
-    branches: [main]
+    branches: [main, dev, stable]
   pull_request:
 
 jobs:
@@ -10,14 +24,35 @@ jobs:
     name: Lint
     runs-on: eph-linux-x64
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Nix
-        uses: metacraft-labs/nixos-modules/.github/setup-nix@main
+      # The manifest repo holding the workspace locks (metacraft-manifests) is
+      # private, so `secrets.GITHUB_TOKEN` cannot read it. Mint an installation
+      # token from the org's CI Token Provider app instead. The app id is an
+      # ORG VARIABLE and only the private key is a secret -- `secrets.
+      # CI_TOKEN_PROVIDER_APP_ID` does not exist at org level and expands to
+      # the empty string.
+      - name: Generate CI token
+        id: app-token
+        uses: actions/create-github-app-token@v1
         with:
-          trusted-public-keys: ${{ vars.TRUSTED_PUBLIC_KEYS }}
+          app-id: ${{ vars.CI_TOKEN_PROVIDER_APP_ID }}
+          private-key: ${{ secrets.CI_TOKEN_PROVIDER_PRIVATE_KEY }}
+          owner: metacraft-labs
+
+      # Checkout first: clone-siblings reads `.github/sibling-repos` out of
+      # $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v4
+
+      - name: Setup dev env (clones .github/sibling-repos at lock revisions)
+        uses: metacraft-labs/metacraft-github-actions/setup-dev-env@main
+        with:
+          env-flavor: nix
+          gh-token: ${{ steps.app-token.outputs.token }}
           substituters: ${{ vars.SUBSTITUTERS }}
-          nix-github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nix develop --command just lint
+          trusted-public-keys: ${{ vars.TRUSTED_PUBLIC_KEYS }}
+
+      - name: Run lint
+        run: dev-exec just lint
+
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -33,14 +68,27 @@ jobs:
       matrix:
         os: [eph-linux-x64, eph-macos-arm64]
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Nix
-        uses: metacraft-labs/nixos-modules/.github/setup-nix@main
+      - name: Generate CI token
+        id: app-token
+        uses: actions/create-github-app-token@v1
         with:
-          trusted-public-keys: ${{ vars.TRUSTED_PUBLIC_KEYS }}
+          app-id: ${{ vars.CI_TOKEN_PROVIDER_APP_ID }}
+          private-key: ${{ secrets.CI_TOKEN_PROVIDER_PRIVATE_KEY }}
+          owner: metacraft-labs
+
+      - uses: actions/checkout@v4
+
+      - name: Setup dev env (clones .github/sibling-repos at lock revisions)
+        uses: metacraft-labs/metacraft-github-actions/setup-dev-env@main
+        with:
+          env-flavor: nix
+          gh-token: ${{ steps.app-token.outputs.token }}
           substituters: ${{ vars.SUBSTITUTERS }}
-          nix-github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nix develop --command just test
+          trusted-public-keys: ${{ vars.TRUSTED_PUBLIC_KEYS }}
+
+      - name: Run test
+        run: dev-exec just test
+
       - if: always()
         uses: actions/upload-artifact@v4
         with:
