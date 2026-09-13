@@ -22,7 +22,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: eph-linux-x64
+    runs-on: [self-hosted, linux, x64]
     steps:
       # The manifest repo holding the workspace locks (metacraft-manifests) is
       # private, so `secrets.GITHUB_TOKEN` cannot read it. Mint an installation
@@ -62,11 +62,15 @@ jobs:
 
   test:
     name: Test (${{ matrix.os }}, orc/release/threads:on)
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        os: [eph-linux-x64, eph-macos-arm64]
+        include:
+          - os: linux
+            runner: [self-hosted, linux, x64]
+          - os: macos
+            runner: [self-hosted, macos, arm64]
     steps:
       - name: Generate CI token
         id: app-token
