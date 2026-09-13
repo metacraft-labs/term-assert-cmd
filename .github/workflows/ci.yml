@@ -62,11 +62,15 @@ jobs:
 
   test:
     name: Test (${{ matrix.os }}, orc/release/threads:on)
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        os: [[self-hosted, linux, x64], [self-hosted, macos, arm64]]
+        include:
+          - os: linux
+            runner: [self-hosted, linux, x64]
+          - os: macos
+            runner: [self-hosted, macos, arm64]
     steps:
       - name: Generate CI token
         id: app-token
