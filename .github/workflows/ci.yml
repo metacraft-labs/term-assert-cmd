@@ -22,7 +22,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: eph-linux-x64
+    runs-on: [self-hosted, linux, x64]
     steps:
       # The manifest repo holding the workspace locks (metacraft-manifests) is
       # private, so `secrets.GITHUB_TOKEN` cannot read it. Mint an installation
@@ -66,7 +66,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [eph-linux-x64, eph-macos-arm64]
+        os: [[self-hosted, linux, x64], [self-hosted, macos, arm64]]
     steps:
       - name: Generate CI token
         id: app-token
