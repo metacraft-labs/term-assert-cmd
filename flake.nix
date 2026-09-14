@@ -2,7 +2,7 @@
   description = "term-assert-cmd - shell-script CLI for talking to a running TermAssert harness";
 
   inputs = {
-    nixos-modules.url = "github:metacraft-labs/nixos-modules";
+    nixos-modules.url = "github:metacraft-labs/devops-modules";
     nixpkgs.follows = "nixos-modules/nixpkgs-unstable";
     flake-parts.follows = "nixos-modules/flake-parts";
     git-hooks.follows = "nixos-modules/git-hooks-nix";
