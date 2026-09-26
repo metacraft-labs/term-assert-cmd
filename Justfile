@@ -10,7 +10,7 @@ src-paths := "--path:src --path:tests --path:../TermAssertClient/src"
 
 nim-flags := "--styleCheck:usages --styleCheck:error"
 
-tests := "tests/test_cli_smoke.nim"
+tests := "tests/test_cli_smoke.nim tests/test_nimcache_is_worktree_local.nim"
 
 build:
     @mkdir -p test-logs
@@ -82,5 +82,5 @@ bench-quick:
     just bench
 
 clean:
-    rm -rf test-logs nim-cache
+    rm -rf test-logs .nimcache nim-cache
     find tests -maxdepth 1 -type f -executable -name "test_*" -not -name "*.nim" -delete
