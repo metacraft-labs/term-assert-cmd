@@ -4,6 +4,7 @@ nim-cache/
 tests/test_*
 !tests/test_*.nim
 !tests/test_*.cfg
+!tests/*.sh
 *.dSYM
 *.exe
 *.pdb
@@ -11,3 +12,6 @@ nimcache/
 # Per-checkout nimcache (config.nims): every Nim compile in this checkout
 # keeps its intermediate files here, never in the shared ~/.cache/nim.
 .nimcache/
+
+# Written by the dev shell's git-hooks.nix hook (a symlink into /nix/store).
+.pre-commit-config.yaml

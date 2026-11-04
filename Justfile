@@ -84,3 +84,8 @@ bench-quick:
 clean:
     rm -rf test-logs .nimcache nim-cache
     find tests -maxdepth 1 -type f -executable -name "test_*" -not -name "*.nim" -delete
+
+# Entering the dev shell from another git repository must write nothing there.
+# Runs `nix develop`, so it is not part of the in-shell test recipes.
+test-dev-shell:
+    bash tests/test_dev_shell_writes_nothing_elsewhere.sh
