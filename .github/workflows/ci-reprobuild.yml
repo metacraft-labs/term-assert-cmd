@@ -79,6 +79,17 @@ jobs:
         # reprobuild engine identically to `just build`.
         run: dev-exec repro build
 
+      # Diagnostic only (continue-on-error, runs only after a failed Windows
+      # build): repro build reports gcc's exit code but not its stderr, so the
+      # generated system exceptions C file is compiled again here with the same
+      # flags and its stderr is printed and saved.
+      - name: Capture gcc stderr for a failed Windows build
+        if: failure() && runner.os == 'Windows'
+        continue-on-error: true
+        run: |
+          mkdir -p test-logs
+          dev-exec bash -c 'c=$(find .nimcache -name "*exceptions.nim.c" | head -1); echo "compiling: $c"; gcc -c -w -fmax-errors=3 -mno-ms-bitfields -fno-strict-aliasing -O3 -fno-ident -fno-math-errno -I"$(dirname "$(dirname "$(command -v nim)")")/lib" -I"$(dirname "$c")" "$c" -o test-logs/exceptions.o 2>&1 | tee test-logs/gcc-stderr.log'
+
       - name: repro test
         # Materialises the `test` collection.
         run: dev-exec repro test
