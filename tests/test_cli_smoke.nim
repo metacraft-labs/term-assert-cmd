@@ -13,7 +13,9 @@ proc startServer(path: string): cint =
   let sh = posix.socket(AF_UNIX, SOCK_STREAM, 0)
   doAssert sh.cint != -1
   var addrUn: Sockaddr_un
-  addrUn.sun_family = AF_UNIX.cushort
+  # sun_family is uint8 on macOS and uint16 on Linux; take the field's own
+  # type so the assignment compiles on both.
+  addrUn.sun_family = typeof(addrUn.sun_family)(AF_UNIX)
   copyMem(addr addrUn.sun_path[0], cstring(path), path.len)
   addrUn.sun_path[path.len] = '\0'
   doAssert bindSocket(sh, cast[ptr SockAddr](addr addrUn),
