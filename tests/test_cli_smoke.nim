@@ -32,7 +32,10 @@ proc compileCli(): string =
     let extraPaths =
       "--path:" & here.parentDir() / "src" &
       " --path:" & here.parentDir().parentDir() / "TermAssertClient" / "src"
-    let cmd = "nim c --styleCheck:usages --styleCheck:error --mm:orc " &
+    # Invoke the compiler that runs this test by its absolute path: a bare
+    # `nim` is resolved through the shell's PATH, which a CI action env may not carry.
+    let cmd = quoteShell(getCurrentCompilerExe()) &
+              " c --styleCheck:usages --styleCheck:error --mm:orc " &
               "-d:release --threads:on " & extraPaths &
               " -o:" & outBin & " " &
               here.parentDir() / "src" / "cli" / "nim_tui_test_cmd.nim"
