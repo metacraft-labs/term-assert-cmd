@@ -28,4 +28,4 @@
 #
 # Cross-repo siblings cloned by setup-dev-env at the explicit SHAs
 # pinned below (see codetracer-specs/Testing/Cross-Repo-CI-Integration.md).
-TermAssertClient=126669e32466c201c06c98d7769ca258ed5f214c  # TermAssertClient@agents tip (socket family type fix)
+TermAssertClient=c64fa156151c8eecc1438180bb6288025b2c7987  # TermAssertClient@agents tip (socket family type fix)
