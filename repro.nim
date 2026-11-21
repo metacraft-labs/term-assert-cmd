@@ -12,7 +12,7 @@
 ## term_assert_client`` (its umbrella ``src/term_assert_client.nim``), so
 ## this file consumes it with the SC-11 develop-mode pattern per
 ## ``reprobuild-specs/Cross-Repo-Source-Consumption.md`` §4.2a: a
-## ``uses: "term_assert_client"`` selector names the sibling producer, and
+## ``uses: "TermAssertClient"`` selector names the sibling producer, and
 ## reprobuild threads the sibling's ``src/`` onto this consumer's
 ## ``nim c --path:`` through the ``nimPathDirs`` aux channel — NO hardcoded
 ## ``../TermAssertClient/src``, NO direnv.
@@ -25,7 +25,7 @@
 ##
 ## * Declares the upstream tool floor + the sibling producer via ``uses:``:
 ##   the ``nim`` / ``gcc`` toolchain (matching the nimble file's
-##   ``requires "nim >= 2.0.0"``) plus ``uses: "term_assert_client"`` (the
+##   ``requires "nim >= 2.0.0"``) plus ``uses: "TermAssertClient"`` (the
 ##   SC-11 Nim library-source producer). The SC-11 channel resolves the
 ##   sibling from source (develop override / workspace lock) and threads its
 ##   ``src/`` onto every ``nim c --path:`` in this package — the executable
@@ -50,7 +50,7 @@
 ## ``--path:src --path:tests --path:../TermAssertClient/src`` on every
 ## ``nim c``. Of those:
 ##   * ``--path:../TermAssertClient/src`` is the SIBLING import path — NOT
-##     hardcoded here; the SC-11 ``uses: "term_assert_client"`` channel
+##     hardcoded here; the SC-11 ``uses: "TermAssertClient"`` channel
 ##     threads it onto the executable compile's ``nim c --path:``.
 ##   * ``--path:src`` is load-bearing for the executable compile
 ##     (``src/cli/nim_tui_test_cmd.nim`` is under ``src/``, but the CLI
@@ -134,13 +134,17 @@ package term_assert_cmd:
     "gcc >=12"
     # SC-11 Nim library-source producer: the sibling ``TermAssertClient``
     # repo exports ``library term_assert_client`` (umbrella
-    # ``src/term_assert_client.nim``). This selector makes reprobuild build
-    # the sibling from source (develop override / workspace lock) and thread
-    # its ``src/`` onto this package's ``nim c --path:`` via the
+    # ``src/term_assert_client.nim``). The selector is the REPO name, not the
+    # library name: reprobuild matches ``uses:`` against the lock dep and the
+    # sibling directory, and ``term_assert_client`` matches neither, so the
+    # sibling's ``src/`` was never threaded and the CLI compile failed with
+    # "cannot open file: term_assert_client". With the repo name this selector
+    # builds the sibling from source (develop override / workspace lock) and
+    # threads its ``src/`` onto this package's ``nim c --path:`` via the
     # ``nimPathDirs`` aux channel, so ``import term_assert_client`` in
     # ``src/cli/nim_tui_test_cmd.nim`` resolves with NO hardcoded
     # ``../TermAssertClient/src``.
-    "term_assert_client"
+    "TermAssertClient"
 
   # Executable declaration — the CLI the nimble file publishes as
   # ``namedBin["cli/nim_tui_test_cmd"] = "term-assert-cmd"``. A
@@ -153,7 +157,7 @@ package term_assert_cmd:
   build:
     # The CLI executable edge. ``paths = @["src"]`` supplies ``--path:src``;
     # the sibling ``TermAssertClient/src`` is threaded by the SC-11
-    # ``uses: "term_assert_client"`` channel, NOT hardcoded here. Flags
+    # ``uses: "TermAssertClient"`` channel, NOT hardcoded here. Flags
     # reproduce the repo's default matrix point (``_matrix orc release on``):
     # ``mm = "orc"``, ``defines = @["release"]``, ``threadsOn = true``.
     var appActions: seq[BuildActionDef] = @[]
