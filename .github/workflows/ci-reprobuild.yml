@@ -70,7 +70,7 @@ jobs:
         uses: metacraft-labs/metacraft-github-actions/setup-dev-env@dev
         with:
           env-flavor: reprobuild
-          repro-version: v0.2.30
+          repro-version: v0.2.31
           gh-token: ${{ steps.ci_token.outputs.token }}
 
       - name: repro build
