@@ -78,7 +78,7 @@ jobs:
         # `repro.nim`. Verifies the primary shipping artefact (the
         # recorder binary or extension) materialises through the
         # reprobuild engine identically to `just build`.
-        run: dev-exec repro build ${{ runner.os == 'macOS' && '--tool-provisioning-for=nim=nix' || '' }}
+        run: dev-exec repro build ${{ runner.os != 'Windows' && '--tool-provisioning-for=nim=nix' || '' }}
 
       # Diagnostic only (continue-on-error, runs only after a failed Windows
       # build): repro build reports gcc's exit code but not its stderr, so the
@@ -93,7 +93,7 @@ jobs:
 
       - name: repro test
         # Materialises the `test` collection.
-        run: dev-exec repro test ${{ runner.os == 'macOS' && '--tool-provisioning-for=nim=nix' || '' }}
+        run: dev-exec repro test ${{ runner.os != 'Windows' && '--tool-provisioning-for=nim=nix' || '' }}
 
       - name: just build (cross-check)
         # Re-runs the legacy `just build` path inside the same env so
